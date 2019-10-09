@@ -74,11 +74,21 @@ public class ReplayExtension extends Adapter {
         return true;
     }
 
+    public static Long getReplayId(Map<String, Object> data) {
+        @SuppressWarnings("unchecked")
+        Optional<Long> optional =
+            resolve(() -> (Long) ((Map<String, Object>) data.get(EVENT_KEY)).get(REPLAY_ID_KEY));
+        return optional.orElse(null);
+    }
+
     private static Long getReplayId(Message.Mutable message) {
         Map<String, Object> data = message.getDataAsMap();
-        @SuppressWarnings("unchecked")
-        Optional<Long> optional = resolve(() -> (Long)((Map<String, Object>)data.get(EVENT_KEY)).get(REPLAY_ID_KEY));
-        return optional.orElse(null);
+        return getReplayId(data);
+    }
+
+    private static Long getReplayId(Message message) {
+        Map<String, Object> data = message.getDataAsMap();
+        return getReplayId(data);
     }
 
     private static <T> Optional<T> resolve(Supplier<T> resolver) {
