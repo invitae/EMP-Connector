@@ -2,6 +2,9 @@
 .project
 .settings
 .classpath
+# Default ignored files
+.history
+.idea
 /.DS_Store
 **/target
 **/.project

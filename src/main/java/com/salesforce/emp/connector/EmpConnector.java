@@ -36,9 +36,9 @@ public class EmpConnector {
 
     private class SubscriptionImpl implements TopicSubscription {
         private final String topic;
-        private final Consumer<Map<String, Object>> consumer;
+        private final Consumer<Message> consumer;
 
-        private SubscriptionImpl(String topic, Consumer<Map<String, Object>> consumer) {
+        private SubscriptionImpl(String topic, Consumer<Message> consumer) {
             this.topic = topic;
             this.consumer = consumer;
             subscriptions.add(this);
@@ -84,7 +84,7 @@ public class EmpConnector {
             Long replayFrom = getReplayFrom();
             ClientSessionChannel channel = client.getChannel(topic);
             CompletableFuture<TopicSubscription> future = new CompletableFuture<>();
-            channel.subscribe((c, message) -> consumer.accept(message.getDataAsMap()), (c, message) -> {
+            channel.subscribe((c, message) -> consumer.accept(message), (c, message) -> {
                 if (message.isSuccessful()) {
                     future.complete(this);
                 } else {
@@ -184,7 +184,7 @@ public class EmpConnector {
      * @return a Future returning the Subscription - on completion returns a Subscription or throws a CannotSubscribe
      *         exception
      */
-    public Future<TopicSubscription> subscribe(String topic, long replayFrom, Consumer<Map<String, Object>> consumer) {
+    public Future<TopicSubscription> subscribe(String topic, long replayFrom, Consumer<Message> consumer) {
         if (!running.get()) {
             throw new IllegalStateException(String.format("Connector[%s} has not been started",
                     parameters.endpoint()));
@@ -212,7 +212,7 @@ public class EmpConnector {
      * @return a Future returning the Subscription - on completion returns a Subscription or throws a CannotSubscribe
      *         exception
      */
-    public Future<TopicSubscription> subscribeEarliest(String topic, Consumer<Map<String, Object>> consumer) {
+    public Future<TopicSubscription> subscribeEarliest(String topic, Consumer<Message> consumer) {
         return subscribe(topic, REPLAY_FROM_EARLIEST, consumer);
     }
 
@@ -226,7 +226,7 @@ public class EmpConnector {
      * @return a Future returning the Subscription - on completion returns a Subscription or throws a CannotSubscribe
      *         exception
      */
-    public Future<TopicSubscription> subscribeTip(String topic, Consumer<Map<String, Object>> consumer) {
+    public Future<TopicSubscription> subscribeTip(String topic, Consumer<Message> consumer) {
         return subscribe(topic, REPLAY_FROM_TIP, consumer);
     }
 

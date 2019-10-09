@@ -12,6 +12,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import org.cometd.bayeux.Message;
 import org.eclipse.jetty.util.ajax.JSON;
 
 import com.salesforce.emp.connector.BayeuxParameters;
@@ -48,7 +50,7 @@ public class LoginExample {
 
         BayeuxParameters params = tokenProvider.login();
 
-        Consumer<Map<String, Object>> consumer = event -> System.out.println(String.format("Received:\n%s", JSON.toString(event)));
+        Consumer<Message> consumer = event -> System.out.println(String.format("Received:\n%s", event.getJSON()));
 
         EmpConnector connector = new EmpConnector(params);
 
